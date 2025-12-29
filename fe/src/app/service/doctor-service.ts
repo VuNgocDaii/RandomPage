@@ -35,4 +35,13 @@ export class DoctorService {
         const filteredDocs = docs.filter(doc => doc.doctorId !== id);
         localStorage.setItem(group, JSON.stringify(filteredDocs));
     }
+    edit(id:number, name:string,group: string) {
+        let docs = this.load(group);
+        const index = docs.findIndex(t => t.doctorId === id);
+
+        if (index>-1) {
+            docs[index].doctorName = name;
+            localStorage.setItem(group, JSON.stringify(docs));
+        } 
+    }
 }

@@ -7,17 +7,31 @@
 
       <div class="add-box">
         <input #doctorNameA type="text" placeholder="Nhập tên bác sĩ..." />
-        <button (click)="addDoc(doctorNameA.value,'gra')">Thêm</button>
+        <button (click)="confirmAdd(doctorNameA,'gra')">Thêm</button>
         <button class="multi-btn" (click)="openPopup('gra')">Thêm nhiều</button>
       </div>
 
       <div class="list-box">
         <ul>
           @for (item of groupA; track item.doctorId) {
-            <li>
-              {{ item.doctorName }}
-              <button (click)="delDoc(item.doctorId,'gra')">Xóa</button>
-            </li>
+          <li class="doc-item">
+            @if (isEditing(item, 'gra')) {
+            <input class="doc-edit-input" [(ngModel)]="editingName" [ngModelOptions]="{ standalone: true }"
+              (keydown.enter)="confirmSaveEdit(`cur`)" (keydown.escape)="cancelEdit()" autofocus />
+
+            <div class="doc-actions">
+              <button class="btn-save" (click)="confirmSaveEdit(`cur`)">Lưu</button>
+              <button class="btn-cancel" (click)="cancelEdit()">Hủy</button>
+            </div>
+            } @else {
+            <span class="doc-name">{{ item.doctorName }}</span>
+
+            <div class="doc-actions">
+              <button class="btn-edit" (click)="startEdit(item,'gra')">Edit</button>
+              <button class="btn-del" (click)="confirmDelete(item,'gra')">Xóa</button>
+            </div>
+            }
+          </li>
           }
         </ul>
       </div>
@@ -28,17 +42,31 @@
 
       <div class="add-box">
         <input #doctorNameB type="text" placeholder="Nhập tên bác sĩ..." />
-        <button (click)="addDoc(doctorNameB.value,'grb')">Thêm</button>
+        <button (click)="confirmAdd(doctorNameB,'grb')">Thêm</button>
         <button class="multi-btn" (click)="openPopup('grb')">Thêm nhiều</button>
       </div>
 
       <div class="list-box">
         <ul>
           @for (item of groupB; track item.doctorId) {
-            <li>
-              {{ item.doctorName }}
-              <button (click)="delDoc(item.doctorId,'grb')">Xóa</button>
-            </li>
+          <li class="doc-item">
+            @if (isEditing(item, 'grb')) {
+            <input class="doc-edit-input" [(ngModel)]="editingName" [ngModelOptions]="{ standalone: true }"
+              (keydown.enter)="confirmSaveEdit(`cur`)" (keydown.escape)="cancelEdit()" autofocus />
+
+            <div class="doc-actions">
+              <button class="btn-save" (click)="confirmSaveEdit(`cur`)">Lưu</button>
+              <button class="btn-cancel" (click)="cancelEdit()">Hủy</button>
+            </div>
+            } @else {
+            <span class="doc-name">{{ item.doctorName }}</span>
+
+            <div class="doc-actions">
+              <button class="btn-edit" (click)="startEdit(item,'grb')">Edit</button>
+              <button class="btn-del" (click)="confirmDelete(item,'grb')">Xóa</button>
+            </div>
+            }
+          </li>
           }
         </ul>
       </div>
@@ -46,47 +74,105 @@
   </div>
 
   @if (haveRandomed === false) {
-    <button class="go-btn" (click)="random()">GO</button>
-  }
-  @else {
-    <div class="result-box">
+  <button class="go-btn" (click)="random()">GO</button>
+  } @else {
+  <div class="result-box">
+    <div class="result-header">
       <h3>KẾT QUẢ GHÉP</h3>
+      <button class="reset-btn" (click)="confirmReset()">Reset</button>
+    </div>
 
-      <div class="list-box">
+    <div class="result-columns">
+      <div class="result-col">
         <ul>
           @for (item of resOfMatchingDone; track item.docA.doctorId) {
-            <li>
-              <strong>{{ item.docA.doctorName }}</strong>
-              →
-              @if (item.docB !== null) {
-                <span>{{ item.docB.doctorName }}</span>
-              }
-              @else {
-                <span class="no-match">Không ghép</span>
-              }
-            </li>
+          <li>
+            <strong>{{ item.docA.doctorName }}</strong>
+            →
+            <span>{{ item.docB?.doctorName }}</span>
+          </li>
+          }
+        </ul>
+      </div>
+
+
+      <div class="result-col">
+        <ul>
+          @for (item of resOfMatchingFail; track item.docA.doctorId) {
+          <li>
+            <strong>{{ item.docA.doctorName }}</strong>
+            →
+            <span class="no-match">Không ghép</span>
+          </li>
           }
         </ul>
       </div>
     </div>
-    <button (click)="haveRandomed = false">reset</button>
+  </div>
   }
 
   @if (showPopup) {
-    <div class="popup-overlay">
-      <div class="popup">
-        <h3>Thêm nhiều bác sĩ</h3>
+  <div class="popup-overlay" (click)="closePopup()">
+    <div class="popup" (click)="$event.stopPropagation()">
+      <h3>Thêm nhiều bác sĩ</h3>
 
-        <textarea
-          [(ngModel)]="bulkText"
-          placeholder="Mỗi dòng là 1 bác sĩ&#10;VD:&#10;Nguyễn Văn A&#10;Trần Văn B"
-        ></textarea>
+      <textarea [(ngModel)]="bulkText" placeholder="Mỗi dòng là 1 bác sĩ
+VD:
+Nguyễn Văn A 
+Trần Văn B"></textarea>
 
-        <div class="popup-actions">
-          <button (click)="confirmBulkAdd()">Thêm</button>
-          <button class="cancel" (click)="closePopup()">Hủy</button>
-        </div>
+      <div class="popup-actions">
+        <button (click)="confirmBulkAdd()">Thêm</button>
+        <button class="cancel" (click)="closePopup()">Hủy</button>
       </div>
     </div>
+  </div>
+  }
+
+  @if (showConfirm) {
+  <div class="confirm-overlay" (click)="closeConfirm()">
+    <div class="confirm-modal" (click)="$event.stopPropagation()">
+      <div class="confirm-head">
+        <div class="confirm-icon" [class.danger]="confirmType==='danger'" [class.warning]="confirmType==='warning'">
+
+        </div>
+
+        <div class="confirm-titles">
+          <h3>{{ confirmTitle }}</h3>
+          <p>{{ confirmMessage }}</p>
+        </div>
+      </div>
+
+      <div class="confirm-actions">
+        <button class="btn-cancel" (click)="closeConfirm()">Hủy</button>
+        <button class="btn-ok" [class.danger]="confirmType==='danger'" [class.warning]="confirmType==='warning'"
+          (click)="onConfirmYes()">
+          Đồng ý
+        </button>
+      </div>
+    </div>
+  </div>
+  }
+  @if (openWarning) {
+  <div class="confirm-overlay" (click)="closeWarning()">
+    <div class="confirm-modal" (click)="$event.stopPropagation()">
+      <div class="confirm-head">
+        <div class="confirm-icon" [class.danger]="confirmType==='danger'" [class.warning]="confirmType==='warning'">
+
+        </div>
+
+        <div class="confirm-titles" style="font-size: 15px;">
+          <p style="font-weight: 700;">Vui lòng không để trống hoặc chỉ nhập dấu cách</p>
+        </div>
+      </div>
+
+      <div class="confirm-actions">
+        <button class="btn-ok" [class.danger]="confirmType==='danger'" [class.warning]="confirmType==='warning'"
+          (click)="closeWarning()">
+          Đồng ý
+        </button>
+      </div>
+    </div>
+  </div>
   }
 </div>

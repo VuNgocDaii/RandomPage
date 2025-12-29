@@ -1,0 +1,92 @@
+<div class="container">
+  <h1 class="title">RANDOM</h1>
+
+  <div class="group-container">
+    <div class="group">
+      <h3>Group A</h3>
+
+      <div class="add-box">
+        <input #doctorNameA type="text" placeholder="Nhập tên bác sĩ..." />
+        <button (click)="addDoc(doctorNameA.value,'gra')">Thêm</button>
+        <button class="multi-btn" (click)="openPopup('gra')">Thêm nhiều</button>
+      </div>
+
+      <div class="list-box">
+        <ul>
+          @for (item of groupA; track item.doctorId) {
+            <li>
+              {{ item.doctorName }}
+              <button (click)="delDoc(item.doctorId,'gra')">Xóa</button>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="group">
+      <h3>Group B</h3>
+
+      <div class="add-box">
+        <input #doctorNameB type="text" placeholder="Nhập tên bác sĩ..." />
+        <button (click)="addDoc(doctorNameB.value,'grb')">Thêm</button>
+        <button class="multi-btn" (click)="openPopup('grb')">Thêm nhiều</button>
+      </div>
+
+      <div class="list-box">
+        <ul>
+          @for (item of groupB; track item.doctorId) {
+            <li>
+              {{ item.doctorName }}
+              <button (click)="delDoc(item.doctorId,'grb')">Xóa</button>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  @if (haveRandomed === false) {
+    <button class="go-btn" (click)="random()">GO</button>
+  }
+  @else {
+    <div class="result-box">
+      <h3>KẾT QUẢ GHÉP</h3>
+
+      <div class="list-box">
+        <ul>
+          @for (item of resOfMatchingDone; track item.docA.doctorId) {
+            <li>
+              <strong>{{ item.docA.doctorName }}</strong>
+              →
+              @if (item.docB !== null) {
+                <span>{{ item.docB.doctorName }}</span>
+              }
+              @else {
+                <span class="no-match">Không ghép</span>
+              }
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+    <button (click)="haveRandomed = false">reset</button>
+  }
+
+  @if (showPopup) {
+    <div class="popup-overlay">
+      <div class="popup">
+        <h3>Thêm nhiều bác sĩ</h3>
+
+        <textarea
+          [(ngModel)]="bulkText"
+          placeholder="Mỗi dòng là 1 bác sĩ&#10;VD:&#10;Nguyễn Văn A&#10;Trần Văn B"
+        ></textarea>
+
+        <div class="popup-actions">
+          <button (click)="confirmBulkAdd()">Thêm</button>
+          <button class="cancel" (click)="closePopup()">Hủy</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

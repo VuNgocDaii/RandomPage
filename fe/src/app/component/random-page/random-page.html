@@ -2,6 +2,7 @@
   <h1 class="title">RANDOM</h1>
 
   <div class="group-container">
+    <!-- gr A -->
     <div class="group">
       <h3>Group A</h3>
 
@@ -12,6 +13,22 @@
       </div>
 
       <div class="list-box">
+        <div class="list-toolbar">
+          <label class="checkbox-all">
+            <input type="checkbox" [checked]="isAllChecked('gra')" (change)="toggleAll($event,'gra')" />
+            Chọn tất cả
+          </label>
+
+          <div class="toolbar-actions">
+            <button class="btn-del" (click)="confirmDeleteSelected('gra')">
+              Xóa đã chọn
+            </button>
+            <button class="btn-del danger" (click)="confirmDeleteAll('gra')">
+              Xóa tất cả
+            </button>
+          </div>
+        </div>
+
         <ul>
           @for (item of groupA; track item.doctorId) {
           <li class="doc-item">
@@ -24,6 +41,9 @@
               <button class="btn-cancel" (click)="cancelEdit()">Hủy</button>
             </div>
             } @else {
+            <input type="checkbox" class="row-checkbox" [(ngModel)]="item.selected"
+              [ngModelOptions]="{ standalone: true }" />
+
             <span class="doc-name">{{ item.doctorName }}</span>
 
             <div class="doc-actions">
@@ -37,6 +57,7 @@
       </div>
     </div>
 
+    <!--  gr B-->
     <div class="group">
       <h3>Group B</h3>
 
@@ -47,6 +68,22 @@
       </div>
 
       <div class="list-box">
+        <div class="list-toolbar">
+          <label class="checkbox-all">
+            <input type="checkbox" [checked]="isAllChecked('grb')" (change)="toggleAll($event,'grb')" />
+            Chọn tất cả
+          </label>
+
+          <div class="toolbar-actions">
+            <button class="btn-del" (click)="confirmDeleteSelected('grb')">
+              Xóa đã chọn
+            </button>
+            <button class="btn-del danger" (click)="confirmDeleteAll('grb')">
+              Xóa tất cả
+            </button>
+          </div>
+        </div>
+
         <ul>
           @for (item of groupB; track item.doctorId) {
           <li class="doc-item">
@@ -59,6 +96,9 @@
               <button class="btn-cancel" (click)="cancelEdit()">Hủy</button>
             </div>
             } @else {
+            <input type="checkbox" class="row-checkbox" [(ngModel)]="item.selected"
+              [ngModelOptions]="{ standalone: true }" />
+
             <span class="doc-name">{{ item.doctorName }}</span>
 
             <div class="doc-actions">
@@ -76,6 +116,7 @@
   @if (haveRandomed === false) {
   <button class="go-btn" (click)="random()">GO</button>
   } @else {
+  @if (curCase === '1') {
   <div class="result-box">
     <div class="result-header">
       <h3>KẾT QUẢ GHÉP</h3>
@@ -95,7 +136,6 @@
         </ul>
       </div>
 
-
       <div class="result-col">
         <ul>
           @for (item of resOfMatchingFail; track item.docA.doctorId) {
@@ -110,6 +150,41 @@
     </div>
   </div>
   }
+  @else {
+    <div class="result-box">
+  <div class="result-header">
+    <h3>KẾT QUẢ GHÉP</h3>
+    <button class="reset-btn" (click)="confirmReset()">Reset</button>
+  </div>
+
+  <div class="case2-table">
+    <div class="case2-row case2-head">
+      <div class="case2-cell case2-a-head">Group A</div>
+      <div class="case2-cell case2-b-head">Group B</div>
+    </div>
+
+    @for (item of resCase2; track item.docA.doctorId) {
+      <div class="case2-row">
+        <div class="case2-cell case2-a">
+          <strong class="case2-a-name">{{ item.docA.doctorName }}</strong>
+        </div>
+
+        <div class="case2-cell case2-b">
+          <ul class="case2-b-grid">
+            @for (child of item.docB; track child.doctorId) {
+              <li class="case2-b-item" title="{{ child.doctorName }}">
+                {{ child.doctorName }}
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+  }
+  }
 
   @if (showPopup) {
   <div class="popup-overlay" (click)="closePopup()">
@@ -118,7 +193,7 @@
 
       <textarea [(ngModel)]="bulkText" placeholder="Mỗi dòng là 1 bác sĩ
 VD:
-Nguyễn Văn A 
+Nguyễn Văn A
 Trần Văn B"></textarea>
 
       <div class="popup-actions">
@@ -134,7 +209,6 @@ Trần Văn B"></textarea>
     <div class="confirm-modal" (click)="$event.stopPropagation()">
       <div class="confirm-head">
         <div class="confirm-icon" [class.danger]="confirmType==='danger'" [class.warning]="confirmType==='warning'">
-
         </div>
 
         <div class="confirm-titles">
@@ -153,12 +227,12 @@ Trần Văn B"></textarea>
     </div>
   </div>
   }
+
   @if (openWarning) {
   <div class="confirm-overlay" (click)="closeWarning()">
     <div class="confirm-modal" (click)="$event.stopPropagation()">
       <div class="confirm-head">
         <div class="confirm-icon" [class.danger]="confirmType==='danger'" [class.warning]="confirmType==='warning'">
-
         </div>
 
         <div class="confirm-titles" style="font-size: 15px;">
